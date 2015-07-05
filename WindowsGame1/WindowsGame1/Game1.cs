@@ -1132,14 +1132,42 @@ namespace WindowsGame1
                 tempPower.usesLeft--;
                 Player p = players.Peek();
                 if (tempPower.usesLeft < 1) { tempCard.hasBorder = false; p.myConsumePowers.Remove(tempPower); }
+                //Remove cards from hand
+                if (tempPower.typeOfGood.Equals("card"))
+                {
+                    foreach (Card c in allSections[4])
+                    {
+                        if (c.isSelected)
+                        {
+                            c.select(false);
+                            allSections[6].Remove(c);
+                        }    
+                    }
+                }
+                else
+                {
+                    foreach (Card c in allSections[4])
+                    {
+                        if (c.isSelected)
+                        {
+                            c.select(false);
+                            allSections[4].Remove(c);
+                            allSections[5][allSections[5].IndexOf(c)].hasGood = false;
+                        }    
+                    }
+                }
                 p.chipPoints += tempPower.vpReward;
+                //Double VP if the player picked that phase and not discarding cards
+                if (!tempPower.typeOfGood.Equals("card") && p.phaseSelected.Equals("$")) p.chipPoints += tempPower.vpReward;
                 for (int i = 0; i < tempPower.cardReward; i++)
                 {
                     allSections[6].AddCard(deck.Dequeue());
                 }
                 allSections[6].resetSection();
                 allSections[7][0].isSelectable = playerConsumeComplete(p);
+                return;
             }
+            if (index != 0) return;
             allSections[7].RemoveAt(1);
             //If successful remove borders
             foreach (Card c in allSections[5])
